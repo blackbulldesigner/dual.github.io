@@ -1,4 +1,5 @@
 <title>Dual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Dual — streetwear en blanco y negro. Drop 03: Concreto.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,8 +40,21 @@
     <a href="#drops" data-hover>Drops</a>
     <a href="#lista" data-hover>Lista</a>
   </nav>
-  <button class="nav__cart" id="cartOpen" data-hover aria-label="Abrir carrito">Carrito <span class="nav__count" id="cartCount">0</span></button>
+  <div class="nav__right">
+    <button class="nav__cart" id="cartOpen" data-hover aria-label="Abrir carrito"><span class="nav__cart-label">Carrito</span> <span class="nav__count" id="cartCount">0</span></button>
+    <button class="nav__menu" id="menuBtn" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú"><i></i><i></i></button>
+  </div>
 </header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu__links" aria-label="Menú">
+    <a href="#tienda"><span>Tienda</span><em class="mono">Drop 03</em></a>
+    <a href="#manifiesto"><span>Manifiesto</span><em class="mono">Quiénes somos</em></a>
+    <a href="#drops"><span>Drops</span><em class="mono">Calendario</em></a>
+    <a href="#lista"><span>Lista</span><em class="mono">Acceso anticipado</em></a>
+  </nav>
+  <div class="menu__foot mono"><span>Lanzamiento 19.09.2026 · 18:00 h</span><span>Instagram · TikTok</span></div>
+</div>
 
 <main id="top">
   <section class="hero wrap" id="hero">
@@ -58,6 +72,16 @@
         <path fill="currentColor" fill-rule="evenodd" d="M80 40L94 0H104L118 40H108L105.2 32H92.8L90 40Z M95.6 24H102.4L99 14.3Z"/>
         <path fill="currentColor" d="M126 0H135V31H152V40H126Z"/>
       </svg>
+      <div class="hero__stack" aria-hidden="true">
+        <svg class="hero__row" viewBox="0 0 72 40">
+          <path fill="currentColor" fill-rule="evenodd" d="M0 0H14A20 20 0 0 1 14 40H0Z M9 9V31H14A11 11 0 0 0 14 9Z"/>
+          <path fill="currentColor" d="M42 0H51V24A6 6 0 0 0 63 24V0H72V24A15 15 0 0 1 42 24Z"/>
+        </svg>
+        <svg class="hero__row" viewBox="80 0 72 40">
+          <path fill="currentColor" fill-rule="evenodd" d="M80 40L94 0H104L118 40H108L105.2 32H92.8L90 40Z M95.6 24H102.4L99 14.3Z"/>
+          <path fill="currentColor" d="M126 0H135V31H152V40H126Z"/>
+        </svg>
+      </div>
       <div class="hero__bottom fade-up">
         <div>
           <p class="hero__tag">Toda calle tiene dos lados.</p>
@@ -109,6 +133,11 @@
       </div>
     </div>
     <div class="grid" id="grid"></div>
+    <div class="swipe" aria-hidden="true">
+      <span class="mono"><b id="swipeNow">01</b> / <span id="swipeTotal">06</span></span>
+      <div class="swipe__bar"><i id="swipeBar"></i></div>
+      <span class="mono">Desliza →</span>
+    </div>
   </section>
 
   <section class="manifesto section wrap" id="manifiesto">
@@ -178,6 +207,5 @@
 
 <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="products.js"></script>
 <script src="app.js"></script>

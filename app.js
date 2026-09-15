@@ -12,22 +12,31 @@
   const flatSvg = (p, variant, label = true) =>
     `<svg class="flat" data-variant="${variant}" viewBox="0 0 300 340" ${label ? `role="img" aria-label="Dibujo técnico: ${p.name} en ${variant}"` : 'aria-hidden="true"'}>${flats[p.flat]}</svg>`;
 
-  /* ---------- smooth scroll ---------- */
-  let lenis = null;
-  if (window.Lenis && !reduce) {
-    lenis = new Lenis({ duration: 1.25, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
-  }
-  const scrollToEl = el => {
-    if (lenis) lenis.scrollTo(el, { duration: 1.6 });
-    else el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  /* ---------- anchor links (scroll nativo, suave) ---------- */
+  const getScrollY = () => window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  const mobile = matchMedia('(max-width: 720px)');
+
+  /* ---------- menú móvil ---------- */
+  const menu = $('#menu'), menuBtn = $('#menuBtn');
+  const setMenu = open => {
+    menu.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', !open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    document.body.classList.toggle('no-scroll', open);
+    $('#nav').classList.remove('is-hidden');
   };
+  menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
+  mobile.addEventListener('change', e => { if (!e.matches) setMenu(false); });
+
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
-    const target = a.getAttribute('href') === '#top' ? document.body : $(a.getAttribute('href'));
+    const target = $(a.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
-    scrollToEl(target);
+    if (menu.classList.contains('is-open')) setMenu(false);
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   });
 
   /* ---------- toast ---------- */
@@ -108,6 +117,23 @@
     }
   });
 
+  /* ---------- carrusel móvil ---------- */
+  const pad2 = n => String(n).padStart(2, '0');
+  function updateSwipe() {
+    if (!mobile.matches) return;
+    const cards = $$('.card', grid).filter(c => !c.hidden && !c.classList.contains('is-out'));
+    if (!cards.length) return;
+    const step = cards[0].offsetWidth + (parseFloat(getComputedStyle(grid).columnGap) || 12);
+    const max = grid.scrollWidth - grid.clientWidth;
+    const i = grid.scrollLeft >= max - 4 ? cards.length - 1 : clamp(Math.round(grid.scrollLeft / step), 0, cards.length - 1);
+    $('#swipeNow').textContent = pad2(i + 1);
+    $('#swipeTotal').textContent = pad2(cards.length);
+    $('#swipeBar').style.transform = `scaleX(${(i + 1) / cards.length})`;
+  }
+  grid.addEventListener('scroll', updateSwipe, { passive: true });
+  mobile.addEventListener('change', updateSwipe);
+  updateSwipe();
+
   /* ---------- filters ---------- */
   $$('.chip').forEach(chip => chip.addEventListener('click', () => {
     const f = chip.dataset.filter;
@@ -126,7 +152,8 @@
       }
     });
     $('#pieceCount').textContent = `${String(shown).padStart(2, '0')} ${shown === 1 ? 'pieza' : 'piezas'}`;
-    setTimeout(() => lenis && lenis.resize(), 420);
+    grid.scrollTo({ left: 0, behavior: reduce ? 'auto' : 'smooth' });
+    setTimeout(updateSwipe, 420);
   }));
 
   /* ---------- cart ---------- */
@@ -186,13 +213,12 @@
     scrim.classList.toggle('is-open', open);
     drawer.setAttribute('aria-hidden', !open);
     document.body.classList.toggle('no-scroll', open);
-    if (lenis) open ? lenis.stop() : lenis.start();
     if (open) $('#cartClose').focus();
   };
   $('#cartOpen').addEventListener('click', () => openCart(true));
   $('#cartClose').addEventListener('click', () => openCart(false));
   scrim.addEventListener('click', () => openCart(false));
-  addEventListener('keydown', e => { if (e.key === 'Escape') openCart(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') { openCart(false); setMenu(false); } });
   $('#checkout').addEventListener('click', () =>
     say(cart.length ? 'Pago de demostración: aquí va tu pasarela de pago' : 'Tu carrito está vacío'));
   renderCart();
@@ -258,13 +284,13 @@
   if (!reduce) {
     $$('.reveal').forEach(el => {
       if (el.getBoundingClientRect().top < innerHeight) return;
+      if (mobile.matches && el.classList.contains('card')) return;
       el.classList.add('pre');
       io.observe(el);
     });
   }
   document.fonts && document.fonts.ready.then(() => {
     tracks.forEach(t => (t.w = t.el.scrollWidth / 2));
-    lenis && lenis.resize();
   });
 
   /* ---------- cursor + magnetic ---------- */
@@ -301,13 +327,12 @@
 
   /* ---------- main loop ---------- */
   const nav = $('#nav');
-  let lastY = scrollY, vel = 0, last = performance.now();
+  let lastY = getScrollY(), vel = 0, last = performance.now();
 
   function frame(t) {
-    if (lenis) lenis.raf(t);
     const dt = Math.min(64, t - last) / 16.67;
     last = t;
-    const y = lenis ? lenis.scroll : scrollY;
+    const y = getScrollY();
     vel += ((y - lastY) - vel) * .12;
 
     if (Math.abs(y - lastY) > 2) nav.classList.toggle('is-hidden', y > lastY && y > 240);
