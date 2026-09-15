@@ -298,6 +298,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 @media (max-width:720px){
   .nav{padding:12px var(--gutter)}
   .nav__logo{width:84px}
+  .nav__links{display:none}
   .nav__cart-label{display:none}
   .nav__count{min-width:34px;height:34px;border-radius:17px;font-size:13px}
   .nav__menu{display:block}
