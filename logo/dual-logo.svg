@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 40" width="960" height="160">
+  <!-- Símbolo: dos D espalda con espalda (una sólida, una en contorno) -->
+  <path fill="#0B0B0C" d="M30 0H20A20 20 0 0 0 20 40H30Z"/>
+  <path fill="none" stroke="#0B0B0C" stroke-width="3" d="M35.5 1.5H44A18.5 18.5 0 0 1 44 38.5H35.5Z"/>
+  <!-- Logotipo DUAL -->
+  <g transform="translate(88 0)" fill="#0B0B0C">
+    <path fill-rule="evenodd" d="M0 0H14A20 20 0 0 1 14 40H0Z M9 9V31H14A11 11 0 0 0 14 9Z"/>
+    <path d="M42 0H51V24A6 6 0 0 0 63 24V0H72V24A15 15 0 0 1 42 24Z"/>
+    <path fill-rule="evenodd" d="M80 40L94 0H104L118 40H108L105.2 32H92.8L90 40Z M95.6 24H102.4L99 14.3Z"/>
+    <path d="M126 0H135V31H152V40H126Z"/>
+  </g>
+</svg>

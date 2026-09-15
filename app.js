@@ -1,0 +1,341 @@
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const money = n => '$' + n.toLocaleString('en-US');
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const { products, flats } = window.DUAL;
+  const byId = Object.fromEntries(products.map(p => [p.id, p]));
+  const FREE_SHIP = 1500;
+
+  const flatSvg = (p, variant, label = true) =>
+    `<svg class="flat" data-variant="${variant}" viewBox="0 0 300 340" ${label ? `role="img" aria-label="Dibujo técnico: ${p.name} en ${variant}"` : 'aria-hidden="true"'}>${flats[p.flat]}</svg>`;
+
+  /* ---------- smooth scroll ---------- */
+  let lenis = null;
+  if (window.Lenis && !reduce) {
+    lenis = new Lenis({ duration: 1.25, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
+  }
+  const scrollToEl = el => {
+    if (lenis) lenis.scrollTo(el, { duration: 1.6 });
+    else el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const target = a.getAttribute('href') === '#top' ? document.body : $(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    scrollToEl(target);
+  });
+
+  /* ---------- toast ---------- */
+  const toast = $('#toast');
+  let toastTimer;
+  const say = msg => {
+    toast.textContent = msg;
+    toast.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-on'), 2800);
+  };
+
+  /* ---------- product grid ---------- */
+  const grid = $('#grid');
+  grid.innerHTML = products.map(p => {
+    const single = p.sizes.length === 1;
+    return `
+    <article class="card reveal" data-id="${p.id}" data-cat="${p.cat}">
+      <div class="card__media" data-variant="negro">
+        <span class="card__code mono">${p.code}</span>
+        <span class="card__stock mono">Quedan ${p.left}</span>
+        <div class="card__flat">${flatSvg(p, 'negro')}</div>
+        <div class="quick">
+          <div class="quick__row"><span class="mono">Talla</span><span class="mono card__meta">${single ? 'Talla única' : 'Elige una'}</span></div>
+          <div class="sizes" role="group" aria-label="Talla de ${p.name}">
+            ${p.sizes.map(s => `<button class="size" data-size="${s}" aria-pressed="${single}" ${p.sold.includes(s) ? 'disabled title="Agotada"' : ''}>${s}</button>`).join('')}
+          </div>
+          <button class="add" data-hover>${single ? 'Agregar · ' + money(p.price) : 'Elige una talla'}</button>
+        </div>
+      </div>
+      <div class="card__info">
+        <h3 class="card__name">${p.name}</h3>
+        <span class="card__price">${money(p.price)}</span>
+        <span class="card__meta mono">${p.meta}</span>
+        <div class="swatches" role="group" aria-label="Color de ${p.name}">
+          <button class="swatch swatch--negro" data-variant="negro" aria-pressed="true" aria-label="Negro" data-hover></button>
+          <button class="swatch swatch--blanco" data-variant="blanco" aria-pressed="false" aria-label="Blanco" data-hover></button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const p = byId[card.dataset.id];
+    const media = $('.card__media', card);
+
+    const sw = e.target.closest('.swatch');
+    if (sw) {
+      const v = sw.dataset.variant;
+      $$('.swatch', card).forEach(b => b.setAttribute('aria-pressed', b === sw));
+      media.dataset.variant = v;
+      const svg = $('.flat', card);
+      svg.dataset.variant = v;
+      svg.setAttribute('aria-label', `Dibujo técnico: ${p.name} en ${v}`);
+      return;
+    }
+
+    const size = e.target.closest('.size');
+    if (size) {
+      $$('.size', card).forEach(b => b.setAttribute('aria-pressed', b === size));
+      $('.add', card).textContent = `Agregar ${size.dataset.size} · ${money(p.price)}`;
+      return;
+    }
+
+    const add = e.target.closest('.add');
+    if (add) {
+      const chosen = $('.size[aria-pressed="true"]', card);
+      if (!chosen) {
+        say('Elige una talla primero');
+        $('.sizes', card).animate(
+          [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }],
+          { duration: 360, easing: 'ease-out' });
+        return;
+      }
+      addToCart(p.id, media.dataset.variant, chosen.dataset.size);
+    }
+  });
+
+  /* ---------- filters ---------- */
+  $$('.chip').forEach(chip => chip.addEventListener('click', () => {
+    const f = chip.dataset.filter;
+    $$('.chip').forEach(c => c.setAttribute('aria-pressed', c === chip));
+    let shown = 0;
+    $$('.card', grid).forEach(card => {
+      const match = f === 'todo' || card.dataset.cat === f;
+      card.classList.remove('pre');
+      if (match) {
+        shown++;
+        card.hidden = false;
+        requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('is-out')));
+      } else {
+        card.classList.add('is-out');
+        setTimeout(() => { if (card.classList.contains('is-out')) card.hidden = true; }, 380);
+      }
+    });
+    $('#pieceCount').textContent = `${String(shown).padStart(2, '0')} ${shown === 1 ? 'pieza' : 'piezas'}`;
+    setTimeout(() => lenis && lenis.resize(), 420);
+  }));
+
+  /* ---------- cart ---------- */
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem('dual-cart') || '[]').filter(l => byId[l.id]); } catch (_) { cart = []; }
+  const save = () => { try { localStorage.setItem('dual-cart', JSON.stringify(cart)); } catch (_) {} };
+
+  const countEl = $('#cartCount');
+  const body = $('#cartBody');
+
+  function renderCart() {
+    const items = cart.reduce((n, l) => n + l.qty, 0);
+    const total = cart.reduce((n, l) => n + l.qty * byId[l.id].price, 0);
+    countEl.textContent = items;
+    $('#cartTotal').textContent = money(total);
+    $('#shipBar').style.transform = `scaleX(${clamp(total / FREE_SHIP, 0, 1)})`;
+    $('#shipNote').textContent = total >= FREE_SHIP ? 'Tu envío va gratis' : `Te faltan ${money(FREE_SHIP - total)} para envío gratis`;
+    body.innerHTML = cart.length ? cart.map((l, i) => {
+      const p = byId[l.id];
+      return `<div class="line" data-i="${i}">
+        <div class="line__thumb ${l.variant === 'blanco' ? 'is-blanco' : ''}">${flatSvg(p, l.variant, false)}</div>
+        <div>
+          <p class="line__name">${p.name}</p>
+          <div class="line__meta mono">${l.variant} · Talla ${l.size}</div>
+          <div class="qty"><button data-q="-1" aria-label="Quitar uno">−</button><span>${l.qty}</span><button data-q="1" aria-label="Agregar uno">+</button></div>
+        </div>
+        <div class="line__right"><span class="card__price">${money(p.price * l.qty)}</span><button class="remove">Quitar</button></div>
+      </div>`;
+    }).join('') : `<div class="empty"><b>Todavía nada.</b><span>Elige de qué lado estás: todo sale en negro y en blanco.</span></div>`;
+  }
+
+  function addToCart(id, variant, size) {
+    const found = cart.find(l => l.id === id && l.variant === variant && l.size === size);
+    if (found) found.qty++;
+    else cart.push({ id, variant, size, qty: 1 });
+    save();
+    renderCart();
+    countEl.classList.add('bump');
+    setTimeout(() => countEl.classList.remove('bump'), 350);
+    say(`${byId[id].name} · ${variant} · ${size} agregado`);
+  }
+
+  body.addEventListener('click', e => {
+    const line = e.target.closest('.line');
+    if (!line) return;
+    const l = cart[+line.dataset.i];
+    const q = e.target.closest('[data-q]');
+    if (q) l.qty += +q.dataset.q;
+    if (e.target.closest('.remove') || l.qty < 1) cart.splice(+line.dataset.i, 1);
+    save();
+    renderCart();
+  });
+
+  const drawer = $('#drawer'), scrim = $('#scrim');
+  const openCart = open => {
+    drawer.classList.toggle('is-open', open);
+    scrim.classList.toggle('is-open', open);
+    drawer.setAttribute('aria-hidden', !open);
+    document.body.classList.toggle('no-scroll', open);
+    if (lenis) open ? lenis.stop() : lenis.start();
+    if (open) $('#cartClose').focus();
+  };
+  $('#cartOpen').addEventListener('click', () => openCart(true));
+  $('#cartClose').addEventListener('click', () => openCart(false));
+  scrim.addEventListener('click', () => openCart(false));
+  addEventListener('keydown', e => { if (e.key === 'Escape') openCart(false); });
+  $('#checkout').addEventListener('click', () =>
+    say(cart.length ? 'Pago de demostración: aquí va tu pasarela de pago' : 'Tu carrito está vacío'));
+  renderCart();
+
+  /* ---------- newsletter ---------- */
+  $('#joinForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = $('#email');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
+      say('Ese correo no parece válido. Ejemplo: nombre@correo.com');
+      input.focus();
+      return;
+    }
+    input.value = '';
+    say('Listo. Te avisamos 24 h antes del Drop 04');
+  });
+
+  /* ---------- countdown ---------- */
+  const target = new Date('2026-09-19T18:00:00').getTime();
+  const units = Object.fromEntries($$('#countdown b').map(b => [b.dataset.u, b]));
+  const tickCount = () => {
+    let s = Math.max(0, Math.floor((target - Date.now()) / 1000));
+    const vals = { d: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 };
+    for (const k in vals) {
+      const txt = String(vals[k]).padStart(2, '0');
+      if (units[k].textContent !== txt) units[k].textContent = txt;
+    }
+  };
+  tickCount();
+  setInterval(tickCount, 1000);
+
+  /* ---------- tapes ---------- */
+  const tracks = $$('.tape__track').map(tr => {
+    const originals = [...tr.children];
+    for (let i = 0; i < 8 && tr.scrollWidth < innerWidth * 1.3; i++) originals.forEach(n => tr.appendChild(n.cloneNode(true)));
+    [...tr.children].forEach(n => { const c = n.cloneNode(true); c.setAttribute('aria-hidden', 'true'); tr.appendChild(c); });
+    return { el: tr, dir: +tr.dataset.speed, x: 0, w: tr.scrollWidth / 2 };
+  });
+  addEventListener('resize', () => tracks.forEach(t => (t.w = t.el.scrollWidth / 2)));
+
+  /* ---------- manifesto words ---------- */
+  const mText = $('#manifestoText');
+  const words = [];
+  [...mText.childNodes].forEach(node => {
+    const out = node.nodeName === 'EM';
+    node.textContent.split(/\s+/).filter(Boolean).forEach(w => words.push(`<span class="w${out ? ' out' : ''}">${w}</span>`));
+  });
+  mText.innerHTML = words.join(' ');
+  const wordEls = $$('.w', mText);
+  if (reduce) wordEls.forEach(w => w.classList.add('on'));
+
+  /* ---------- reveals ---------- */
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    const el = en.target;
+    const i = [...el.parentElement.children].indexOf(el);
+    const delay = el.classList.contains('card') ? (i % 3) * 90 : el.classList.contains('spec') ? i * 110 : 0;
+    el.classList.remove('pre');
+    el.animate([{ transform: 'translateY(60px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      { duration: 1200, delay, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
+    io.unobserve(el);
+  }), { rootMargin: '0px 0px -8% 0px' });
+  if (!reduce) {
+    $$('.reveal').forEach(el => {
+      if (el.getBoundingClientRect().top < innerHeight) return;
+      el.classList.add('pre');
+      io.observe(el);
+    });
+  }
+  document.fonts && document.fonts.ready.then(() => {
+    tracks.forEach(t => (t.w = t.el.scrollWidth / 2));
+    lenis && lenis.resize();
+  });
+
+  /* ---------- cursor + magnetic ---------- */
+  const cur = $('.cursor'), ring = $('.cursor-ring');
+  const mouse = { x: innerWidth / 2, y: innerHeight / 2 }, ringPos = { ...mouse };
+  if (fine) {
+    cur.style.opacity = ring.style.opacity = 0;
+    addEventListener('pointermove', e => {
+      mouse.x = e.clientX; mouse.y = e.clientY;
+      cur.style.opacity = ring.style.opacity = 1;
+    });
+    document.addEventListener('pointerover', e => ring.classList.toggle('is-hover', !!e.target.closest('a,button,[data-hover]')));
+    document.addEventListener('pointerleave', () => (cur.style.opacity = ring.style.opacity = 0));
+
+    if (!reduce) $$('.magnetic').forEach(el => {
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        el.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .3}px, ${(e.clientY - r.top - r.height / 2) * .4}px)`;
+      });
+      el.addEventListener('pointerleave', () => (el.style.transform = ''));
+    });
+  }
+
+  /* ---------- hero split line ---------- */
+  const hero = $('#hero'), ink = $('#heroInk');
+  let splitTarget = .5, split = .5, pointerInHero = false;
+  hero.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    const r = hero.getBoundingClientRect();
+    splitTarget = clamp((e.clientX - r.left) / r.width, .2, .8);
+    pointerInHero = true;
+  });
+  hero.addEventListener('pointerleave', () => { splitTarget = .5; pointerInHero = false; });
+
+  /* ---------- main loop ---------- */
+  const nav = $('#nav');
+  let lastY = scrollY, vel = 0, last = performance.now();
+
+  function frame(t) {
+    if (lenis) lenis.raf(t);
+    const dt = Math.min(64, t - last) / 16.67;
+    last = t;
+    const y = lenis ? lenis.scroll : scrollY;
+    vel += ((y - lastY) - vel) * .12;
+
+    if (Math.abs(y - lastY) > 2) nav.classList.toggle('is-hidden', y > lastY && y > 240);
+    lastY = y;
+
+    if (!reduce) {
+      if (!pointerInHero && !fine) splitTarget = .5 + Math.sin(t / 1600) * .14;
+      split += (splitTarget - split) * .075 * dt;
+      ink.style.transform = `translate3d(${(split * 100).toFixed(3)}%,0,0)`;
+
+      tracks.forEach(tr => {
+        tr.x = (tr.x + (1 + Math.min(Math.abs(vel) * .35, 14)) * dt) % tr.w;
+        tr.el.style.transform = `translate3d(${tr.dir > 0 ? -tr.x : tr.x - tr.w}px,0,0)`;
+      });
+
+      const r = mText.getBoundingClientRect();
+      const prog = clamp((innerHeight * .8 - r.top) / (r.height + innerHeight * .25), 0, 1);
+      const lit = Math.round(prog * wordEls.length);
+      wordEls.forEach((w, i) => w.classList.toggle('on', i < lit));
+    }
+
+    if (fine) {
+      ringPos.x += (mouse.x - ringPos.x) * .16 * dt;
+      ringPos.y += (mouse.y - ringPos.y) * .16 * dt;
+      cur.style.transform = `translate3d(${mouse.x}px,${mouse.y}px,0)`;
+      ring.style.transform = `translate3d(${ringPos.x}px,${ringPos.y}px,0)`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
