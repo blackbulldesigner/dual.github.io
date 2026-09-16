@@ -93,6 +93,58 @@
     stage.addEventListener('pointerleave', () => { tx = ty = 0; if (!state.zoom) kick(); });
   }
 
+  /* ---------- cuenta regresiva corta en los datos del drop ---------- */
+  const launch = new Date('2026-09-19T18:00:00').getTime();
+  const dropCount = $('[data-drop-count]');
+  const tickDrop = () => {
+    const s = Math.max(0, Math.floor((launch - Date.now()) / 1000));
+    const pad = n => String(n).padStart(2, '0');
+    dropCount.textContent = s
+      ? `${Math.floor(s / 86400)}d ${pad(Math.floor(s / 3600) % 24)}h ${pad(Math.floor(s / 60) % 60)}m`
+      : 'Ya';
+    if (!s) dropCount.nextSibling.textContent = 'disponible';
+  };
+  tickDrop();
+  setInterval(tickDrop, 15000);
+
+  /* ---------- entrada con hype ---------- */
+  const section = $('#venom');
+  let letter = 0;
+  $$('.venom__word', section).forEach(word => {
+    word.innerHTML = [...word.textContent]
+      .map(ch => `<span class="l" aria-hidden="true" style="--i:${letter++}">${ch}</span>`).join('');
+  });
+  $$('.venom__facts li', section).forEach((li, i) => li.style.setProperty('--i', i));
+  $$('.panel > *', section).forEach((el, i) => el.style.setProperty('--i', i));
+
+  /* el aviso se "descifra" letra por letra */
+  function scramble(el, duration) {
+    const final = el.textContent;
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/·';
+    const start = performance.now();
+    (function frame(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const shown = Math.floor(p * final.length);
+      el.textContent = [...final].map((c, i) =>
+        i < shown || c === ' ' ? c : glyphs[Math.floor(Math.random() * glyphs.length)]).join('');
+      if (p < 1) requestAnimationFrame(frame);
+      else el.textContent = final;
+    })(start);
+  }
+
+  /* solo se arma si la sección todavía no se ve: nunca esconde algo que ya está en pantalla */
+  if (!reduce && 'IntersectionObserver' in window && section.getBoundingClientRect().top > innerHeight * .75) {
+    section.classList.add('is-armed');
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      requestAnimationFrame(() => section.classList.add('is-live'));
+      scramble($('[data-scramble]', section), 1100);
+      setTimeout(() => section.classList.remove('is-armed'), 3400);
+    }, { threshold: .2 });
+    io.observe(section);
+  }
+
   render();
   apply();
 })();
