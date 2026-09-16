@@ -348,7 +348,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .venom.is-armed:not(.is-live) .viewer__stage{clip-path:inset(100% 0 0 0)}
 .venom.is-armed:not(.is-live) .shot img{transform:scale(1.22)}
 
-/* ---------- pedido por WhatsApp ---------- */
+/* ---------- pedido por Instagram ---------- */
 .form{display:grid;gap:14px;padding-block:16px}
 .back{justify-self:start;color:var(--smoke);text-decoration:underline;text-underline-offset:3px;padding:4px 0}
 .back:hover{color:var(--ink)}
@@ -362,13 +362,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .form__row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form__note{margin:0;color:var(--smoke);font-size:13px}
 .sent{display:grid;gap:12px;padding-block:40px;justify-items:start}
-.sent b{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1;text-transform:uppercase}
+.sent__title{margin:0;font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1;text-transform:uppercase}
+.steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+.steps strong{font-weight:700}
+.sent label{margin-top:8px;color:var(--smoke)}
+.order-text{justify-self:stretch;width:100%;padding:12px;border:1.5px solid var(--line);border-radius:3px;background:var(--chalk);font-family:var(--f-mono);font-size:12px;line-height:1.55;resize:none}
 .sent p{margin:0;color:var(--smoke);max-width:36ch}
 .sent .btn{color:var(--ink);--btn-ground:var(--paper)}
 .drawer__foot .mono{color:var(--smoke)}
-.btn--wa{gap:12px}
-.btn--wa .wa{flex:0 0 auto;color:var(--btn-ground,#000)}
-.sent .btn--wa .wa{color:var(--paper)}
+.btn--ig{gap:12px}
+.btn--ig .ig{flex:0 0 auto;color:var(--btn-ground,#000)}
+.sent .btn--ig .ig{color:var(--paper)}
 
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;bottom:24px;z-index:160;display:flex;align-items:center;gap:12px;max-width:calc(100% - 32px);padding:14px 20px;background:var(--ink);color:var(--paper);border-radius:999px;transform:translate(-50%,160%);transition:transform .7s var(--ease)}
@@ -424,6 +428,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
   .nav__cart-label{display:none}
   .nav__count{min-width:34px;height:34px;border-radius:17px;font-size:13px}
   .nav__menu{display:block}
+  .nav{mix-blend-mode:normal;color:var(--ink);background:rgba(241,241,238,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav__count{background:var(--ink);color:var(--paper)}
+  body.menu-open .nav{background:transparent;border-color:transparent;color:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none}
+  body.menu-open .nav__count{background:var(--paper);color:var(--ink)}
 
   .hero{padding-block:84px 36px}
   .hero__content{gap:22px}
@@ -462,6 +470,20 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
   .card__price{font-size:18px}
   .card__meta{font-size:12px}
   .swatch{width:30px;height:30px}
+  .card{flex:0 0 min(84%,380px)}
+  .card__media{display:block;aspect-ratio:auto;overflow:hidden}
+  .card__media::before{display:none}
+  .card .card__flat{position:relative;inset:auto;width:100%;aspect-ratio:4/5;margin:0}
+  .card:not(.card--tee) .card__flat{padding:64px 16% 28px}
+  .card--tee .card__code,.card--tee .card__stock{top:14px}
+  .card--tee .card__code{left:12px}
+  .card--tee .card__stock{right:12px}
+  .quick{position:relative;left:auto;right:auto;bottom:auto;margin:0;padding:14px;border-radius:0;transform:none;border-top:1px solid var(--line)}
+  .quick .sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .quick .sizes:has(.size:only-child){grid-template-columns:1fr}
+  .quick .size{min-width:0;padding:13px 0}
+  .card__info{gap:4px 12px}
+  .card__name{font-size:26px;line-height:1.02}
   .swipe{display:flex;align-items:center;gap:14px;margin-top:22px}
   .swipe b{font-weight:500}
   .swipe__bar{flex:1;height:2px;background:var(--line)}
@@ -499,7 +521,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
   .remove{padding:8px 0;font-size:12px}
   .drawer__foot .btn{padding:19px}
   .form__row{grid-template-columns:1fr}
-  .sent b{font-size:34px}
+  .sent__title{font-size:34px}
 
   .toast{bottom:16px;width:calc(100% - 32px);justify-content:center;text-align:center;border-radius:14px}
 

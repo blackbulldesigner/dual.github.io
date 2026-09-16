@@ -29,7 +29,9 @@ QUE FALTA CAMBIAR ANTES DE VENDER
 - La gorra y el tote son productos inventados (products.js).
 - El Drop 02 "Concreto" del calendario es inventado (index.html).
 - El envio gratis desde $1,500 es un ejemplo.
-- El boton "Pagar" NO cobra: falta conectar Shopify o Mercado Pago.
+- Los pedidos se cierran por Instagram: abre app.js, busca la linea
+  const INSTAGRAM = '';  y escribe tu usuario sin @ entre las comillas.
+  Mientras este vacio, el boton Finalizar pedido avisa que falta configurarlo.
 - El formulario de correo no guarda nada todavia.
 
 PARA CAMBIAR PRECIOS O NOMBRES

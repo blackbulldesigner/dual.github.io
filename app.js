@@ -27,6 +27,7 @@
     menuBtn.setAttribute('aria-expanded', open);
     menuBtn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
     document.body.classList.toggle('no-scroll', open);
+    document.body.classList.toggle('menu-open', open);
     $('#nav').classList.remove('is-hidden');
   };
   menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
@@ -224,23 +225,24 @@
   addEventListener('keydown', e => { if (e.key === 'Escape') { openCart(false); setMenu(false); } });
   renderCart();
 
-  /* ---------- pedido por WhatsApp ---------- */
-  const WHATSAPP = '525668863748';          // Dual: +52 656 886 3748
+  /* ---------- pedido por Instagram ---------- */
+  const INSTAGRAM = '';                       // usuario de Instagram de la tienda, sin @
+  const igUrl = () => `https://ig.me/m/${INSTAGRAM}`;
   const cartFoot = $('#cartFoot'), checkoutFoot = $('#checkoutFoot');
   const checkoutBody = $('#checkoutBody'), orderForm = $('#orderForm'), orderSent = $('#orderSent');
   const fields = [
-    ['oNombre', 'Nombre', v => v.trim().length > 2, 'Escribe tu nombre completo'],
-    ['oTel', 'WhatsApp', v => v.replace(/\D/g, '').length === 10, 'Deben ser 10 dígitos'],
-    ['oCp', 'CP', v => /^\d{5}$/.test(v.trim()), 'El código postal lleva 5 dígitos'],
-    ['oMail', 'Correo', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), 'Ejemplo: nombre@correo.com'],
-    ['oCalle', 'Calle y número', v => v.trim().length > 4, 'Falta la calle y el número'],
-    ['oCol', 'Colonia', v => v.trim().length > 2, 'Falta la colonia'],
-    ['oCiudad', 'Ciudad', v => v.trim().length > 2, 'Falta la ciudad'],
-    ['oEstado', 'Estado', v => v.trim().length > 3, 'Falta el estado'],
-    ['oRef', 'Referencias', () => true, '']
+    ['oNombre', v => v.trim().length > 2, 'Escribe tu nombre completo'],
+    ['oTel', v => v.replace(/\D/g, '').length === 10, 'Deben ser 10 dígitos'],
+    ['oCp', v => /^\d{5}$/.test(v.trim()), 'El código postal lleva 5 dígitos'],
+    ['oMail', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), 'Ejemplo: nombre@correo.com'],
+    ['oCalle', v => v.trim().length > 4, 'Falta la calle y el número'],
+    ['oCol', v => v.trim().length > 2, 'Falta la colonia'],
+    ['oCiudad', v => v.trim().length > 2, 'Falta la ciudad'],
+    ['oEstado', v => v.trim().length > 3, 'Falta el estado'],
+    ['oRef', () => true, '']
   ];
 
-  /* los datos se quedan guardados en el navegador de quien compra */
+  /* los datos se quedan en el navegador de quien compra para la próxima vez */
   const DATA_KEY = 'dual-datos';
   try {
     const saved = JSON.parse(localStorage.getItem(DATA_KEY) || '{}');
@@ -264,6 +266,7 @@
     if (!isCart) {
       orderForm.hidden = false;
       orderSent.hidden = true;
+      checkoutFoot.hidden = false;
       $('#checkoutTotal').textContent = $('#cartTotal').textContent;
       checkoutBody.scrollTop = 0;
     }
@@ -302,7 +305,7 @@
       '(falta cotizar el envío)',
       '',
       `Nombre: ${g('oNombre')}`,
-      `WhatsApp: ${g('oTel')}`,
+      `Teléfono: ${g('oTel')}`,
       `Correo: ${g('oMail')}`,
       `Dirección: ${g('oCalle')}, Col. ${g('oCol')}, ${g('oCiudad')}, ${g('oEstado')}, CP ${g('oCp')}`,
       g('oRef') ? `Referencias: ${g('oRef')}` : null,
@@ -311,11 +314,26 @@
     ].filter(l => l !== null).join('\n');
   }
 
-  let lastUrl = '';
+  /* copia síncrona (funciona dentro del navegador de Instagram) + API moderna como respaldo */
+  function copyText(text) {
+    let ok = false;
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    try { ok = document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => {}, () => {});
+    return ok;
+  }
+
   $('#sendOrder').addEventListener('click', () => {
     if (!cart.length) { say('Tu carrito está vacío'); setView('cart'); return; }
     let first = null;
-    fields.forEach(([id, , ok, msg]) => {
+    fields.forEach(([id, ok, msg]) => {
       const input = $('#' + id);
       if (ok(input.value)) clearError(input);
       else { markError(input, msg); if (!first) first = input; }
@@ -326,22 +344,26 @@
       first.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
       return;
     }
-    lastUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;
-    $('#waLink').href = lastUrl;
-    window.open(lastUrl, '_blank', 'noopener');
+    if (!INSTAGRAM) { say('Falta configurar el Instagram de la tienda'); return; }
+
+    const text = orderText();
+    const copied = copyText(text);
+    $('#orderText').value = text;
+    $('#igLink').href = igUrl();
+    $('#sentTitle').textContent = copied ? 'Pedido copiado' : 'Copia tu pedido';
     orderForm.hidden = true;
     orderSent.hidden = false;
+    checkoutFoot.hidden = true;
     checkoutBody.scrollTop = 0;
-    say('Pedido enviado a WhatsApp');
+    say(copied ? 'Pedido copiado: pégalo en nuestro Instagram' : 'Copia el texto y pégalo en nuestro Instagram');
+    window.open(igUrl(), '_blank', 'noopener');
   });
 
-  $('#copyOrder').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(orderText());
-      say('Pedido copiado');
-    } catch (_) {
-      say('No se pudo copiar: usa el botón de WhatsApp');
-    }
+  $('#copyOrder').addEventListener('click', () => {
+    const area = $('#orderText');
+    const ok = copyText(area.value);
+    if (!ok) { area.focus(); area.select(); }
+    say(ok ? 'Pedido copiado' : 'Mantén presionado el texto y elige Copiar');
   });
 
   /* ---------- newsletter ---------- */
