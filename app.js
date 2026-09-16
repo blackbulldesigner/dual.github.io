@@ -3,14 +3,16 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const money = n => '$' + n.toLocaleString('en-US');
+  const money = n => '$' + n.toLocaleString('es-MX');
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const { products, flats } = window.DUAL;
   const byId = Object.fromEntries(products.map(p => [p.id, p]));
   const FREE_SHIP = 1500;
 
   const flatSvg = (p, variant, label = true) =>
-    `<svg class="flat" data-variant="${variant}" viewBox="0 0 300 340" ${label ? `role="img" aria-label="Dibujo técnico: ${p.name} en ${variant}"` : 'aria-hidden="true"'}>${flats[p.flat]}</svg>`;
+    p.kind === 'tee'
+      ? window.DUAL_TEE(variant, p.print, 'front')
+      : `<svg class="flat" data-variant="${variant}" viewBox="0 0 300 340" ${label ? `role="img" aria-label="Dibujo técnico: ${p.name} en ${variant}"` : 'aria-hidden="true"'}>${flats[p.flat]}</svg>`;
 
   /* ---------- anchor links (scroll nativo, suave) ---------- */
   const getScrollY = () => window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -54,7 +56,7 @@
   grid.innerHTML = products.map(p => {
     const single = p.sizes.length === 1;
     return `
-    <article class="card reveal" data-id="${p.id}" data-cat="${p.cat}">
+    <article class="card reveal ${p.kind === 'tee' ? 'card--tee' : ''}" data-id="${p.id}" data-cat="${p.cat}">
       <div class="card__media" data-variant="negro">
         <span class="card__code mono">${p.code}</span>
         <span class="card__stock mono">Quedan ${p.left}</span>
@@ -90,9 +92,7 @@
       const v = sw.dataset.variant;
       $$('.swatch', card).forEach(b => b.setAttribute('aria-pressed', b === sw));
       media.dataset.variant = v;
-      const svg = $('.flat', card);
-      svg.dataset.variant = v;
-      svg.setAttribute('aria-label', `Dibujo técnico: ${p.name} en ${v}`);
+      $('.card__flat', card).innerHTML = flatSvg(p, v);
       return;
     }
 
@@ -195,6 +195,8 @@
     setTimeout(() => countEl.classList.remove('bump'), 350);
     say(`${byId[id].name} · ${variant} · ${size} agregado`);
   }
+
+  window.DUAL_CART = { add: addToCart, say };
 
   body.addEventListener('click', e => {
     const line = e.target.closest('.line');

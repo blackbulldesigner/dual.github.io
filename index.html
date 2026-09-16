@@ -1,10 +1,10 @@
 <title>Dual</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Dual — streetwear en blanco y negro. Drop 03: Concreto.">
+<meta name="description" content="Dual — streetwear en blanco y negro. Drop 01: Desert Venom.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=7">
 
 <!-- Logo DUAL: logotipo geométrico + símbolo (dos D espalda con espalda) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -35,9 +35,9 @@
 <header class="nav" id="nav">
   <a href="#top" aria-label="Dual, inicio"><svg class="nav__logo" viewBox="0 0 152 40"><use href="#logo-word"/></svg></a>
   <nav class="nav__links" aria-label="Principal">
+    <a href="#venom" data-hover>Drop 01</a>
     <a href="#tienda" data-hover>Tienda</a>
     <a href="#manifiesto" data-hover>Manifiesto</a>
-    <a href="#drops" data-hover>Drops</a>
     <a href="#lista" data-hover>Lista</a>
   </nav>
   <div class="nav__right">
@@ -48,9 +48,9 @@
 
 <div class="menu" id="menu" aria-hidden="true">
   <nav class="menu__links" aria-label="Menú">
-    <a href="#tienda"><span>Tienda</span><em class="mono">Drop 03</em></a>
+    <a href="#venom"><span>Drop 01</span><em class="mono">Desert Venom</em></a>
+    <a href="#tienda"><span>Tienda</span><em class="mono">4 piezas</em></a>
     <a href="#manifiesto"><span>Manifiesto</span><em class="mono">Quiénes somos</em></a>
-    <a href="#drops"><span>Drops</span><em class="mono">Calendario</em></a>
     <a href="#lista"><span>Lista</span><em class="mono">Acceso anticipado</em></a>
   </nav>
   <div class="menu__foot mono"><span>Lanzamiento 19.09.2026 · 18:00 h</span><span>Instagram · TikTok</span></div>
@@ -61,7 +61,7 @@
     <div class="hero__ink" id="heroInk" aria-hidden="true"></div>
     <div class="hero__content">
       <div class="hero__top mono fade-up">
-        <span>Drop 03 — Concreto</span>
+        <span>Drop 01 — Desert Venom</span>
         <span>Otoño 2026</span>
         <span>Lanzamiento 19.09.2026 · 18:00 h</span>
       </div>
@@ -85,11 +85,11 @@
       <div class="hero__bottom fade-up">
         <div>
           <p class="hero__tag">Toda calle tiene dos lados.</p>
-          <p class="hero__copy">Ropa pesada, cortes amplios y solo dos colores. Cada prenda sale en negro y en blanco: tú eliges de qué lado estás.</p>
+          <p class="hero__copy">El Drop 01 es un alacrán a placa completa sobre playera oversize de 240 GSM. Tela negra o blanca, estampado sólido o de contorno. $650 MXN.</p>
         </div>
         <div class="hero__side">
           <div>
-            <p class="mono" style="margin:0 0 8px">Faltan para el Drop 03</p>
+            <p class="mono" style="margin:0 0 8px">Faltan para el Drop 01</p>
             <div class="count" id="countdown" aria-live="off">
               <div><b data-u="d">04</b><span class="mono">Días</span></div>
               <div><b data-u="h">00</b><span class="mono">Hrs</span></div>
@@ -98,8 +98,8 @@
             </div>
           </div>
           <div class="hero__cta">
-            <a class="btn btn--solid magnetic" href="#tienda" data-hover><span>Ver la tienda <i class="arrow">→</i></span></a>
-            <a class="btn magnetic" href="#drops" data-hover><span>Próximos drops</span></a>
+            <a class="btn btn--solid magnetic" href="#venom" data-hover><span>Ver el drop <i class="arrow">→</i></span></a>
+            <a class="btn magnetic" href="#tienda" data-hover><span>Ir a la tienda</span></a>
           </div>
         </div>
       </div>
@@ -108,9 +108,9 @@
 
   <section class="tapes" aria-label="Avisos">
     <div class="tape tape--ink"><div class="tape__track" data-speed="1">
-      <span class="tape__item">Drop 03 — Concreto <i>✕</i></span>
-      <span class="tape__item">Algodón heavyweight 420 GSM <i>✕</i></span>
-      <span class="tape__item">150 piezas por modelo <i>✕</i></span>
+      <span class="tape__item">Drop 01 — Desert Venom <i>✕</i></span>
+      <span class="tape__item">Algodón 240 GSM · Oversize <i>✕</i></span>
+      <span class="tape__item">150 piezas por versión <i>✕</i></span>
       <span class="tape__item">Envío gratis desde $1,500 <i>✕</i></span>
     </div></div>
     <div class="tape tape--paper"><div class="tape__track" data-speed="-1">
@@ -121,14 +121,67 @@
     </div></div>
   </section>
 
+  <section class="section wrap venom" id="venom">
+    <div class="head">
+      <h2 class="head__title reveal">Desert<br>Venom<sup>Drop 01 · 19.09.2026</sup></h2>
+      <p class="mono" style="margin:0;max-width:36ch">Un alacrán a placa completa, de hombro a hombro. Dos telas, dos versiones del estampado, 150 piezas por versión.</p>
+    </div>
+
+    <div class="viewer">
+      <div class="viewer__stage" id="stage">
+        <div class="shot" id="shot"></div>
+        <span class="viewer__hint mono" id="venomTela">Tela negra</span>
+      </div>
+
+      <div class="panel">
+        <span class="mono" id="venomCode">DV-01-01</span>
+        <h3 class="panel__name" id="venomName">Desert Venom · Sólido</h3>
+        <p class="panel__price"><b>$650</b><span class="mono">MXN</span></p>
+        <p class="panel__desc" id="venomDesc">Estampado a placa completa: el alacrán va relleno, de hombro a hombro.</p>
+
+        <div class="opt">
+          <span class="mono">Tela</span>
+          <div class="opt__row">
+            <button class="chip" data-set="variant:negro" aria-pressed="true" data-hover>Negra</button>
+            <button class="chip" data-set="variant:blanco" aria-pressed="false" data-hover>Blanca</button>
+          </div>
+        </div>
+        <div class="opt">
+          <span class="mono">Estampado</span>
+          <div class="opt__row">
+            <button class="chip" data-set="print:solido" aria-pressed="true" data-hover>Sólido</button>
+            <button class="chip" data-set="print:contorno" aria-pressed="false" data-hover>Contorno</button>
+          </div>
+        </div>
+        <div class="opt">
+          <span class="mono">Talla</span>
+          <div class="sizes" id="venomSizes" role="group" aria-label="Talla">
+            <button class="size" data-size="XS" aria-pressed="false">XS</button>
+            <button class="size" data-size="S" aria-pressed="false">S</button>
+            <button class="size" data-size="M" aria-pressed="false">M</button>
+            <button class="size" data-size="L" aria-pressed="false">L</button>
+            <button class="size" data-size="XL" aria-pressed="false">XL</button>
+          </div>
+        </div>
+        <button class="add" id="venomAdd" data-hover>Elige una talla</button>
+        <button class="btn magnetic" id="venomZoom" data-hover><span>Acercar estampado</span></button>
+
+        <dl class="sheet">
+          <div><dt class="mono">Tela</dt><dd>Jersey 240 GSM, 100 % algodón</dd></div>
+          <div><dt class="mono">Corte</dt><dd>Oversize, hombro caído, cuerpo cuadrado</dd></div>
+          <div><dt class="mono">Estampado</dt><dd>Serigrafía a un color, placa grande con bajada a manga</dd></div>
+          <div><dt class="mono">Tiraje</dt><dd>150 piezas por versión, sin reimpresión</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
   <section class="section wrap" id="tienda">
     <div class="head">
-      <h2 class="head__title reveal">Tienda<sup id="pieceCount">06 piezas</sup></h2>
+      <h2 class="head__title reveal">Tienda<sup id="pieceCount">04 piezas</sup></h2>
       <div class="filters" role="group" aria-label="Filtrar por categoría">
         <button class="chip" data-filter="todo" aria-pressed="true" data-hover>Todo</button>
-        <button class="chip" data-filter="tops" aria-pressed="false" data-hover>Tops</button>
-        <button class="chip" data-filter="bottoms" aria-pressed="false" data-hover>Bottoms</button>
-        <button class="chip" data-filter="outerwear" aria-pressed="false" data-hover>Outerwear</button>
+        <button class="chip" data-filter="playeras" aria-pressed="false" data-hover>Playeras</button>
         <button class="chip" data-filter="accesorios" aria-pressed="false" data-hover>Accesorios</button>
       </div>
     </div>
@@ -156,10 +209,8 @@
       <p class="mono" style="margin:0">Una colección cada 3 meses</p>
     </div>
     <ol class="drops">
-      <li class="drop drop--sold reveal" data-hover><span class="mono">Drop 01</span><span class="drop__name">Blanco</span><span class="mono drop__date">14.02.2026</span><span class="pill mono">Agotado</span></li>
-      <li class="drop drop--sold reveal" data-hover><span class="mono">Drop 02</span><span class="drop__name">Negro</span><span class="mono drop__date">06.06.2026</span><span class="pill mono">Agotado</span></li>
-      <li class="drop reveal" data-hover><span class="mono">Drop 03</span><span class="drop__name">Concreto</span><span class="mono drop__date">19.09.2026</span><span class="pill pill--live mono"><span>Este sábado</span></span></li>
-      <li class="drop reveal" data-hover><span class="mono">Drop 04</span><span class="drop__name">Eclipse</span><span class="mono drop__date">12.12.2026</span><span class="pill mono">Próximamente</span></li>
+      <li class="drop reveal" data-hover><span class="mono">Drop 01</span><span class="drop__name">Desert Venom</span><span class="mono drop__date">19.09.2026</span><span class="pill pill--live mono"><span>Este sábado</span></span></li>
+      <li class="drop reveal" data-hover><span class="mono">Drop 02</span><span class="drop__name">Concreto</span><span class="mono drop__date">12.12.2026</span><span class="pill mono">Próximamente</span></li>
     </ol>
 
     <div class="join" id="lista" style="margin-top:clamp(72px,11vw,150px)">
@@ -182,12 +233,12 @@
       <svg class="footer__mark" viewBox="0 0 64 40" aria-hidden="true"><use href="#logo-mark"/></svg>
       <p class="footer__lead">Streetwear en dos colores. Diseñado para la calle, hecho en lotes pequeños.</p>
     </div>
-    <div><h3 class="mono">Tienda</h3><ul><li><a href="#tienda">Hoodies</a></li><li><a href="#tienda">Playeras</a></li><li><a href="#tienda">Pantalones</a></li><li><a href="#tienda">Accesorios</a></li></ul></div>
+    <div><h3 class="mono">Tienda</h3><ul><li><a href="#venom">Desert Venom</a></li><li><a href="#tienda">Playeras</a></li><li><a href="#tienda">Accesorios</a></li></ul></div>
     <div><h3 class="mono">Ayuda</h3><ul><li><a href="#top">Envíos</a></li><li><a href="#top">Cambios</a></li><li><a href="#top">Guía de tallas</a></li><li><a href="#top">Contacto</a></li></ul></div>
     <div><h3 class="mono">Social</h3><ul><li><a href="#top">Instagram</a></li><li><a href="#top">TikTok</a></li><li><a href="#top">Pinterest</a></li></ul></div>
   </div>
   <svg class="footer__word reveal" viewBox="0 0 152 40" aria-hidden="true"><use href="#logo-word"/></svg>
-  <div class="footer__base mono"><span>© 2026 Dual</span><span>Sitio de demostración — el pago no está activo</span></div>
+  <div class="footer__base mono"><span>© 2026 Dual</span><span>Precios en pesos mexicanos (MXN) · el pago no está activo</span></div>
 </footer>
 
 <div class="scrim" id="scrim"></div>
@@ -207,5 +258,6 @@
 
 <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
 
-<script src="products.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="products.js?v=7"></script>
+<script src="drop.js?v=7"></script>
+<script src="app.js?v=7"></script>
