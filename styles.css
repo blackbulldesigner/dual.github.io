@@ -295,13 +295,35 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .ship i{display:block;height:100%;background:var(--ink);transform-origin:left;transition:transform .8s var(--ease)}
 .drawer__foot .btn{justify-content:center;color:var(--ink);--btn-ground:var(--paper)}
 
+/* ---------- pedido por WhatsApp ---------- */
+.form{display:grid;gap:14px;padding-block:16px}
+.back{justify-self:start;color:var(--smoke);text-decoration:underline;text-underline-offset:3px;padding:4px 0}
+.back:hover{color:var(--ink)}
+.form__lead{margin:0;font-size:15px}
+.field2{display:grid;gap:6px}
+.field2 label{color:var(--smoke)}
+.field2 input,.field2 textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:3px;background:var(--chalk);font-size:16px;font-family:var(--f-body);resize:vertical}
+.field2 input:focus,.field2 textarea:focus{outline:none;border-color:var(--ink)}
+.field2 [aria-invalid="true"]{border-color:#A3241F;background:#FBF2F1}
+.field2 .err{color:#A3241F;font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.form__row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form__note{margin:0;color:var(--smoke);font-size:13px}
+.sent{display:grid;gap:12px;padding-block:40px;justify-items:start}
+.sent b{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1;text-transform:uppercase}
+.sent p{margin:0;color:var(--smoke);max-width:36ch}
+.sent .btn{color:var(--ink);--btn-ground:var(--paper)}
+.drawer__foot .mono{color:var(--smoke)}
+.btn--wa{gap:12px}
+.btn--wa .wa{flex:0 0 auto;color:var(--btn-ground,#000)}
+.sent .btn--wa .wa{color:var(--paper)}
+
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;bottom:24px;z-index:160;display:flex;align-items:center;gap:12px;max-width:calc(100% - 32px);padding:14px 20px;background:var(--ink);color:var(--paper);border-radius:999px;transform:translate(-50%,160%);transition:transform .7s var(--ease)}
 .toast.is-on{transform:translate(-50%,0)}
 
 /* ---------- reveal ---------- */
 /* ---------- drop 01: visor de la prenda ---------- */
-.viewer{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:clamp(24px,4vw,64px);align-items:start}
+.viewer{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:clamp(24px,4vw,72px);align-items:start}
 .viewer__stage{position:relative;aspect-ratio:3/4;background:var(--concrete);border-radius:5px;overflow:hidden;cursor:zoom-in}
 .viewer__stage.is-zoom{cursor:zoom-out}
 .shot{position:absolute;inset:0;will-change:transform;transition:transform .7s var(--ease)}
@@ -325,7 +347,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .viewer__sheen{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s var(--ease);mix-blend-mode:soft-light;background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),transparent 62%)}
 .viewer__hint{position:absolute;left:18px;bottom:16px;z-index:2;padding:8px 12px;border-radius:999px;background:rgba(241,241,238,.86);color:var(--ink);backdrop-filter:blur(6px)}
 #venomZoom{justify-content:center;color:var(--ink);--btn-ground:var(--paper)}
-.panel{display:grid;gap:14px;align-content:start}
+.panel{display:grid;gap:14px;align-content:start;max-width:560px}
 .panel__name{margin:0;font-family:var(--f-display);font-weight:900;font-size:clamp(34px,3.6vw,54px);line-height:.92;text-transform:uppercase}
 .panel__price{margin:0;display:flex;align-items:baseline;gap:8px}
 .panel__price b{font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
@@ -338,7 +360,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .sheet div{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
 .sheet dt{color:var(--smoke)}
 .sheet dd{margin:0;font-size:15px}
-@media (max-width:900px){.viewer{grid-template-columns:1fr}}
+@media (max-width:1100px){.viewer{grid-template-columns:minmax(0,380px) minmax(0,1fr)}}
+@media (max-width:900px){.viewer{grid-template-columns:1fr}.viewer__stage{max-width:460px}}
 
 /* ---------- móvil ---------- */
 @media (max-width:720px){
@@ -422,6 +445,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
   .qty button{width:40px;height:40px;font-size:17px}
   .remove{padding:8px 0;font-size:12px}
   .drawer__foot .btn{padding:19px}
+  .form__row{grid-template-columns:1fr}
+  .sent b{font-size:34px}
 
   .toast{bottom:16px;width:calc(100% - 32px);justify-content:center;text-align:center;border-radius:14px}
 

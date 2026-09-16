@@ -4,6 +4,7 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const money = n => '$' + n.toLocaleString('es-MX');
+  const variantLabel = (p, v) => (p.kind === 'tee' ? (v === 'negro' ? 'negra' : 'blanca') : v);
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const { products, flats } = window.DUAL;
   const byId = Object.fromEntries(products.map(p => [p.id, p]));
@@ -177,7 +178,7 @@
         <div class="line__thumb ${l.variant === 'blanco' ? 'is-blanco' : ''}">${flatSvg(p, l.variant, false)}</div>
         <div>
           <p class="line__name">${p.name}</p>
-          <div class="line__meta mono">${l.variant} · Talla ${l.size}</div>
+          <div class="line__meta mono">Tela ${variantLabel(p, l.variant)} · Talla ${l.size}</div>
           <div class="qty"><button data-q="-1" aria-label="Quitar uno">−</button><span>${l.qty}</span><button data-q="1" aria-label="Agregar uno">+</button></div>
         </div>
         <div class="line__right"><span class="card__price">${money(p.price * l.qty)}</span><button class="remove">Quitar</button></div>
@@ -193,7 +194,7 @@
     renderCart();
     countEl.classList.add('bump');
     setTimeout(() => countEl.classList.remove('bump'), 350);
-    say(`${byId[id].name} · ${variant} · ${size} agregado`);
+    say(`${byId[id].name} · ${variantLabel(byId[id], variant)} · ${size} agregado`);
   }
 
   window.DUAL_CART = { add: addToCart, say };
@@ -215,15 +216,133 @@
     scrim.classList.toggle('is-open', open);
     drawer.setAttribute('aria-hidden', !open);
     document.body.classList.toggle('no-scroll', open);
-    if (open) $('#cartClose').focus();
+    if (open) { setView('cart'); $('#cartClose').focus(); }
   };
   $('#cartOpen').addEventListener('click', () => openCart(true));
   $('#cartClose').addEventListener('click', () => openCart(false));
   scrim.addEventListener('click', () => openCart(false));
   addEventListener('keydown', e => { if (e.key === 'Escape') { openCart(false); setMenu(false); } });
-  $('#checkout').addEventListener('click', () =>
-    say(cart.length ? 'Pago de demostración: aquí va tu pasarela de pago' : 'Tu carrito está vacío'));
   renderCart();
+
+  /* ---------- pedido por WhatsApp ---------- */
+  const WHATSAPP = '525668863748';          // Dual: +52 656 886 3748
+  const cartFoot = $('#cartFoot'), checkoutFoot = $('#checkoutFoot');
+  const checkoutBody = $('#checkoutBody'), orderForm = $('#orderForm'), orderSent = $('#orderSent');
+  const fields = [
+    ['oNombre', 'Nombre', v => v.trim().length > 2, 'Escribe tu nombre completo'],
+    ['oTel', 'WhatsApp', v => v.replace(/\D/g, '').length === 10, 'Deben ser 10 dígitos'],
+    ['oCp', 'CP', v => /^\d{5}$/.test(v.trim()), 'El código postal lleva 5 dígitos'],
+    ['oMail', 'Correo', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), 'Ejemplo: nombre@correo.com'],
+    ['oCalle', 'Calle y número', v => v.trim().length > 4, 'Falta la calle y el número'],
+    ['oCol', 'Colonia', v => v.trim().length > 2, 'Falta la colonia'],
+    ['oCiudad', 'Ciudad', v => v.trim().length > 2, 'Falta la ciudad'],
+    ['oEstado', 'Estado', v => v.trim().length > 3, 'Falta el estado'],
+    ['oRef', 'Referencias', () => true, '']
+  ];
+
+  /* los datos se quedan guardados en el navegador de quien compra */
+  const DATA_KEY = 'dual-datos';
+  try {
+    const saved = JSON.parse(localStorage.getItem(DATA_KEY) || '{}');
+    fields.forEach(([id]) => { if (saved[id]) $('#' + id).value = saved[id]; });
+  } catch (_) {}
+  orderForm.addEventListener('input', () => {
+    try {
+      const data = {};
+      fields.forEach(([id]) => (data[id] = $('#' + id).value));
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+    } catch (_) {}
+  });
+
+  function setView(view) {
+    const isCart = view === 'cart';
+    body.hidden = !isCart;
+    cartFoot.hidden = !isCart;
+    checkoutBody.hidden = isCart;
+    checkoutFoot.hidden = isCart;
+    $('.drawer__title').textContent = isCart ? 'Carrito' : 'Tus datos';
+    if (!isCart) {
+      orderForm.hidden = false;
+      orderSent.hidden = true;
+      $('#checkoutTotal').textContent = $('#cartTotal').textContent;
+      checkoutBody.scrollTop = 0;
+    }
+  }
+
+  $('#checkout').addEventListener('click', () => {
+    if (!cart.length) { say('Tu carrito está vacío'); return; }
+    setView('form');
+  });
+  $('#backToCart').addEventListener('click', () => setView('cart'));
+
+  function markError(input, msg) {
+    input.setAttribute('aria-invalid', 'true');
+    let err = input.parentElement.querySelector('.err');
+    if (!err) { err = document.createElement('span'); err.className = 'err'; input.parentElement.appendChild(err); }
+    err.textContent = msg;
+  }
+  function clearError(input) {
+    input.removeAttribute('aria-invalid');
+    const err = input.parentElement.querySelector('.err');
+    if (err) err.remove();
+  }
+
+  function orderText() {
+    const g = id => $('#' + id).value.trim();
+    const lines = cart.map(l => {
+      const p = byId[l.id];
+      return `• ${l.qty} × ${p.name} — tela ${variantLabel(p, l.variant)} — talla ${l.size} — ${money(p.price * l.qty)}`;
+    });
+    const total = cart.reduce((n, l) => n + l.qty * byId[l.id].price, 0);
+    return [
+      'PEDIDO DUAL — Drop 01 Desert Venom',
+      '',
+      ...lines,
+      `Total de piezas: ${money(total)} MXN`,
+      '(falta cotizar el envío)',
+      '',
+      `Nombre: ${g('oNombre')}`,
+      `WhatsApp: ${g('oTel')}`,
+      `Correo: ${g('oMail')}`,
+      `Dirección: ${g('oCalle')}, Col. ${g('oCol')}, ${g('oCiudad')}, ${g('oEstado')}, CP ${g('oCp')}`,
+      g('oRef') ? `Referencias: ${g('oRef')}` : null,
+      '',
+      'Enviado desde la página de Dual.'
+    ].filter(l => l !== null).join('\n');
+  }
+
+  let lastUrl = '';
+  $('#sendOrder').addEventListener('click', () => {
+    if (!cart.length) { say('Tu carrito está vacío'); setView('cart'); return; }
+    let first = null;
+    fields.forEach(([id, , ok, msg]) => {
+      const input = $('#' + id);
+      if (ok(input.value)) clearError(input);
+      else { markError(input, msg); if (!first) first = input; }
+    });
+    if (first) {
+      say('Revisa los datos marcados');
+      first.focus();
+      first.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      return;
+    }
+    lastUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(orderText())}`;
+    $('#waLink').href = lastUrl;
+    window.open(lastUrl, '_blank', 'noopener');
+    orderForm.hidden = true;
+    orderSent.hidden = false;
+    checkoutBody.scrollTop = 0;
+    say('Pedido enviado a WhatsApp');
+  });
+
+  $('#copyOrder').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(orderText());
+      say('Pedido copiado');
+    } catch (_) {
+      say('No se pudo copiar: usa el botón de WhatsApp');
+    }
+  });
 
   /* ---------- newsletter ---------- */
   $('#joinForm').addEventListener('submit', e => {

@@ -1,0 +1,40 @@
+DUAL — sitio web
+================
+
+Esta carpeta es tu sitio completo. Para verlo, abre index.html con doble clic.
+
+QUE HAY AQUI
+------------
+index.html ............. la pagina
+styles.css ............. todos los estilos
+app.js ................. carrito, filtros, menu y animaciones
+products.js ............ el catalogo: nombres, precios, codigos y tallas
+drop.js ................ el visor del Drop 01
+tee-*.jpg .............. tus 4 fotos de mockup
+logo/ .................. el logo en SVG, PNG (fondo transparente) y JPG
+arte/ .................. el alacran recortado con fondo transparente
+
+COMO SUBIRLA A INTERNET (gratis, 2 minutos)
+-------------------------------------------
+1. Entra a https://app.netlify.com/drop
+2. Arrastra ESTA CARPETA COMPLETA a la ventana del navegador.
+3. Netlify te da una direccion tipo https://algo-random.netlify.app
+4. En Site settings > Domain management puedes conectar tu dominio propio.
+
+Otras opciones iguales de validas: vercel.com o pages.cloudflare.com
+
+QUE FALTA CAMBIAR ANTES DE VENDER
+---------------------------------
+- Los datos de "Quedan 150 piezas" son de ejemplo (products.js).
+- La gorra y el tote son productos inventados (products.js).
+- El Drop 02 "Concreto" del calendario es inventado (index.html).
+- El envio gratis desde $1,500 es un ejemplo.
+- El boton "Pagar" NO cobra: falta conectar Shopify o Mercado Pago.
+- El formulario de correo no guarda nada todavia.
+
+PARA CAMBIAR PRECIOS O NOMBRES
+------------------------------
+Abre products.js con el Bloc de notas. Cada producto trae name, price,
+code y sizes. Cambia el numero de price y guarda.
+
+Si editas algo y no ves el cambio en el navegador, recarga con Ctrl + F5.
