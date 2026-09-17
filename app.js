@@ -226,19 +226,18 @@
   renderCart();
 
   /* ---------- pedido por Instagram ---------- */
-  const INSTAGRAM = '';                       // usuario de Instagram de la tienda, sin @
+  const INSTAGRAM = 'dual._.clothing';        // usuario de Instagram de la tienda, sin @
+  const CITY = 'Ciudad Juárez', STATE = 'Chihuahua';   // solo entregas locales
   const igUrl = () => `https://ig.me/m/${INSTAGRAM}`;
   const cartFoot = $('#cartFoot'), checkoutFoot = $('#checkoutFoot');
   const checkoutBody = $('#checkoutBody'), orderForm = $('#orderForm'), orderSent = $('#orderSent');
   const fields = [
     ['oNombre', v => v.trim().length > 2, 'Escribe tu nombre completo'],
     ['oTel', v => v.replace(/\D/g, '').length === 10, 'Deben ser 10 dígitos'],
-    ['oCp', v => /^\d{5}$/.test(v.trim()), 'El código postal lleva 5 dígitos'],
+    ['oCp', v => /^32\d{3}$/.test(v.trim()), 'Solo entregamos en Ciudad Juárez (CP 32000 a 32999)'],
     ['oMail', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), 'Ejemplo: nombre@correo.com'],
     ['oCalle', v => v.trim().length > 4, 'Falta la calle y el número'],
     ['oCol', v => v.trim().length > 2, 'Falta la colonia'],
-    ['oCiudad', v => v.trim().length > 2, 'Falta la ciudad'],
-    ['oEstado', v => v.trim().length > 3, 'Falta el estado'],
     ['oRef', () => true, '']
   ];
 
@@ -302,12 +301,12 @@
       '',
       ...lines,
       `Total de piezas: ${money(total)} MXN`,
-      '(falta cotizar el envío)',
+      `Entrega: ${CITY}, ${STATE} (costo por confirmar)`,
       '',
       `Nombre: ${g('oNombre')}`,
       `Teléfono: ${g('oTel')}`,
       `Correo: ${g('oMail')}`,
-      `Dirección: ${g('oCalle')}, Col. ${g('oCol')}, ${g('oCiudad')}, ${g('oEstado')}, CP ${g('oCp')}`,
+      `Dirección: ${g('oCalle')}, Col. ${g('oCol')}, ${CITY}, ${STATE}, CP ${g('oCp')}`,
       g('oRef') ? `Referencias: ${g('oRef')}` : null,
       '',
       'Enviado desde la página de Dual.'

@@ -28,10 +28,13 @@ QUE FALTA CAMBIAR ANTES DE VENDER
 - Los datos de "Quedan 150 piezas" son de ejemplo (products.js).
 - La gorra y el tote son productos inventados (products.js).
 - El Drop 02 "Concreto" del calendario es inventado (index.html).
-- El envio gratis desde $1,500 es un ejemplo.
-- Los pedidos se cierran por Instagram: abre app.js, busca la linea
-  const INSTAGRAM = '';  y escribe tu usuario sin @ entre las comillas.
-  Mientras este vacio, el boton Finalizar pedido avisa que falta configurarlo.
+- El envio gratis desde $1,500 de la barra del carrito es un ejemplo.
+
+PEDIDOS
+-------
+Los pedidos se cierran por Instagram (@dual._.clothing). Para cambiar la
+cuenta, abre app.js y busca la linea  const INSTAGRAM = 'dual._.clothing';
+Las entregas estan fijas en Ciudad Juarez, Chihuahua (linea const CITY).
 - El formulario de correo no guarda nada todavia.
 
 PARA CAMBIAR PRECIOS O NOMBRES

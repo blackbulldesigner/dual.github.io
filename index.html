@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <link rel="icon" href="logo/png/dual-simbolo-negro.png">
 <meta property="og:title" content="Dual — Drop 01: Desert Venom">
 <meta property="og:description" content="Playera oversize 240 GSM con alacrán a placa completa. Tela negra o blanca, estampado sólido o de contorno. $650 MXN.">
@@ -63,7 +63,7 @@
     <a href="#manifiesto"><span>Manifiesto</span><em class="mono">Quiénes somos</em></a>
     <a href="#lista"><span>Lista</span><em class="mono">Acceso anticipado</em></a>
   </nav>
-  <div class="menu__foot mono"><span>Lanzamiento 19.09.2026 · 18:00 h</span><span>Instagram · TikTok</span></div>
+  <div class="menu__foot mono"><span>Lanzamiento 19.09.2026 · 18:00 h</span><a href="https://www.instagram.com/dual._.clothing/" target="_blank" rel="noopener">Instagram @dual._.clothing</a></div>
 </div>
 
 <main id="top">
@@ -121,7 +121,7 @@
       <span class="tape__item">Drop 01 — Desert Venom <i>✕</i></span>
       <span class="tape__item">Algodón 240 GSM · Oversize <i>✕</i></span>
       <span class="tape__item">150 piezas por versión <i>✕</i></span>
-      <span class="tape__item">Envío gratis desde $1,500 <i>✕</i></span>
+      <span class="tape__item">Entregas en Ciudad Juárez <i>✕</i></span>
     </div></div>
     <div class="tape tape--paper"><div class="tape__track" data-speed="-1">
       <span class="tape__item">Negro <i>/</i></span>
@@ -253,7 +253,7 @@
     </div>
     <div><h3 class="mono">Tienda</h3><ul><li><a href="#venom">Desert Venom</a></li><li><a href="#tienda">Playeras</a></li><li><a href="#tienda">Accesorios</a></li></ul></div>
     <div><h3 class="mono">Ayuda</h3><ul><li><a href="#top">Envíos</a></li><li><a href="#top">Cambios</a></li><li><a href="#top">Guía de tallas</a></li><li><a href="#top">Contacto</a></li></ul></div>
-    <div><h3 class="mono">Social</h3><ul><li><a href="#top">Instagram</a></li><li><a href="#top">TikTok</a></li><li><a href="#top">Pinterest</a></li></ul></div>
+    <div><h3 class="mono">Social</h3><ul><li><a href="https://www.instagram.com/dual._.clothing/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://www.instagram.com/dual._.clothing/" target="_blank" rel="noopener">@dual._.clothing</a></li></ul></div>
   </div>
   <svg class="footer__word reveal" viewBox="0 0 152 40" aria-hidden="true"><use href="#logo-word"/></svg>
   <div class="footer__base mono"><span>© 2026 Dual</span><span>Precios en pesos mexicanos (MXN) · el pago no está activo</span></div>
@@ -270,19 +270,19 @@
   <div class="drawer__body" id="checkoutBody" hidden>
     <form id="orderForm" class="form" novalidate autocomplete="on">
       <button type="button" class="back mono" id="backToCart">← Volver al carrito</button>
-      <p class="form__lead">Llena tus datos. Al finalizar copiamos tu pedido y te llevamos a nuestro Instagram para confirmar pago y envío.</p>
+      <p class="form__lead">Llena tus datos. Por ahora solo entregamos en <strong>Ciudad Juárez, Chihuahua</strong>. Al finalizar copiamos tu pedido y te llevamos a nuestro Instagram para confirmar pago y entrega.</p>
       <div class="field2"><label class="mono" for="oNombre">Nombre completo</label><input id="oNombre" name="nombre" autocomplete="name" required></div>
       <div class="form__row">
         <div class="field2"><label class="mono" for="oTel">Teléfono (paquetería)</label><input id="oTel" name="tel" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10 dígitos" required></div>
-        <div class="field2"><label class="mono" for="oCp">Código postal</label><input id="oCp" name="cp" inputmode="numeric" autocomplete="postal-code" maxlength="5" required></div>
+        <div class="field2"><label class="mono" for="oCp">Código postal</label><input id="oCp" name="cp" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="32000" required></div>
       </div>
       <div class="field2"><label class="mono" for="oMail">Correo</label><input id="oMail" name="email" type="email" autocomplete="email" required></div>
-      <div class="field2"><label class="mono" for="oCalle">Calle y número</label><input id="oCalle" name="calle" autocomplete="street-address" required></div>
-      <div class="form__row">
-        <div class="field2"><label class="mono" for="oCol">Colonia</label><input id="oCol" name="colonia" required></div>
-        <div class="field2"><label class="mono" for="oCiudad">Ciudad</label><input id="oCiudad" name="ciudad" autocomplete="address-level2" required></div>
+      <div class="field2"><label class="mono" for="oCalle">Calle y número</label><input id="oCalle" name="calle" autocomplete="address-line1" required></div>
+      <div class="field2"><label class="mono" for="oCol">Colonia</label><input id="oCol" name="colonia" autocomplete="address-line2" required></div>
+      <div class="field2">
+        <span class="mono field2__label">Ciudad y estado</span>
+        <div class="fixed"><span>Ciudad Juárez, Chihuahua</span><span class="mono">Solo entregas locales</span></div>
       </div>
-      <div class="field2"><label class="mono" for="oEstado">Estado</label><input id="oEstado" name="estado" autocomplete="address-level1" required></div>
       <div class="field2"><label class="mono" for="oRef">Referencias de entrega (opcional)</label><textarea id="oRef" name="referencias" rows="2"></textarea></div>
       <p class="form__note">Tus datos solo van dentro del mensaje que tú nos mandas. El sitio no los envía a ningún servidor.</p>
     </form>
@@ -317,8 +317,8 @@
 
 <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
 
-<script src="products.js?v=11"></script>
-<script src="drop.js?v=11"></script>
-<script src="app.js?v=11"></script>
+<script src="products.js?v=12"></script>
+<script src="drop.js?v=12"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>
