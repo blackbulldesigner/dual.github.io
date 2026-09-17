@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
 <link rel="icon" href="logo/png/dual-simbolo-negro.png">
 <meta property="og:title" content="Dual — Drop 01: Desert Venom">
 <meta property="og:description" content="Playera oversize 240 GSM con alacrán a placa completa. Tela negra o blanca, estampado sólido o de contorno. $650 MXN.">
@@ -288,16 +288,21 @@
     </form>
 
     <div class="sent" id="orderSent" hidden>
-      <p class="sent__title" id="sentTitle">Pedido copiado</p>
-      <ol class="steps">
-        <li>Abre nuestro Instagram con el botón.</li>
-        <li>En el chat, mantén presionado y elige <strong>Pegar</strong>.</li>
-        <li>Envíalo y te confirmamos pago y envío.</li>
-      </ol>
-      <a class="btn btn--solid btn--ig" id="igLink" href="#" target="_blank" rel="noopener"><svg class="ig" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg><span>Abrir Instagram</span></a>
-      <label class="mono" for="orderText">Tu pedido</label>
-      <textarea id="orderText" class="order-text" rows="10" readonly></textarea>
-      <button class="remove" id="copyOrder" type="button">Copiar otra vez</button>
+      <p class="sent__title">Tu pedido está listo</p>
+      <p class="sent__lead">Mándanoslo por Instagram en dos pasos.</p>
+
+      <div class="step" id="step1">
+        <span class="step__num mono">Paso 1</span>
+        <button class="btn btn--solid step__btn" id="copyStep" type="button"><span>Copiar mi pedido</span></button>
+      </div>
+      <div class="step" id="step2">
+        <span class="step__num mono">Paso 2</span>
+        <a class="btn step__btn btn--ig" id="igLink" href="#" target="_blank" rel="noopener"><svg class="ig" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg><span>Abrir Instagram y pegar</span></a>
+        <p class="step__hint">En el chat, mantén presionado, elige <strong>Pegar</strong> y envía.</p>
+      </div>
+
+      <label class="mono" for="orderText">Esto es lo que se copia</label>
+      <textarea id="orderText" class="order-text" rows="9" readonly></textarea>
     </div>
   </div>
 
@@ -311,14 +316,14 @@
   <div class="drawer__foot" id="checkoutFoot" hidden>
     <div class="total"><span class="mono">Total de piezas</span><b id="checkoutTotal">$0</b></div>
     <button class="btn btn--solid btn--ig" id="sendOrder" data-hover><svg class="ig" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg><span>Finalizar pedido</span></button>
-    <p class="mono" style="margin:0">Copiamos tu pedido y abrimos nuestro Instagram: solo pégalo y envíalo</p>
+    <p class="mono" style="margin:0">Después: paso 1 copias tu pedido, paso 2 lo pegas en nuestro Instagram</p>
   </div>
 </aside>
 
 <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
 
-<script src="products.js?v=12"></script>
-<script src="drop.js?v=12"></script>
-<script src="app.js?v=12"></script>
+<script src="products.js?v=13"></script>
+<script src="drop.js?v=13"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

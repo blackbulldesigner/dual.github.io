@@ -313,20 +313,32 @@
     ].filter(l => l !== null).join('\n');
   }
 
-  /* copia síncrona (funciona dentro del navegador de Instagram) + API moderna como respaldo */
-  function copyText(text) {
+  /* copia pensada para el navegador de Instagram en iPhone y Android */
+  function execCopy(el) {
+    const wasReadOnly = el.readOnly;
+    el.contentEditable = 'true';
+    el.readOnly = true;                               // evita que aparezca el teclado
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    el.setSelectionRange(0, el.value.length);
     let ok = false;
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta);
-    ta.select();
-    ta.setSelectionRange(0, text.length);
     try { ok = document.execCommand('copy'); } catch (_) {}
-    ta.remove();
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => {}, () => {});
+    sel.removeAllRanges();
+    el.contentEditable = 'inherit';
+    el.readOnly = wasReadOnly;
     return ok;
+  }
+
+  const step1 = $('#step1'), step2 = $('#step2'), copyBtn = $('#copyStep'), igBtn = $('#igLink');
+
+  function resetSteps() {
+    step1.classList.remove('is-done');
+    step2.classList.remove('is-next');
+    copyBtn.querySelector('span').textContent = 'Copiar mi pedido';
+    igBtn.classList.remove('btn--solid');
   }
 
   $('#sendOrder').addEventListener('click', () => {
@@ -343,26 +355,48 @@
       first.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
       return;
     }
-    if (!INSTAGRAM) { say('Falta configurar el Instagram de la tienda'); return; }
-
-    const text = orderText();
-    const copied = copyText(text);
-    $('#orderText').value = text;
-    $('#igLink').href = igUrl();
-    $('#sentTitle').textContent = copied ? 'Pedido copiado' : 'Copia tu pedido';
+    $('#orderText').value = orderText();
+    igBtn.href = igUrl();
+    resetSteps();
     orderForm.hidden = true;
     orderSent.hidden = false;
     checkoutFoot.hidden = true;
     checkoutBody.scrollTop = 0;
-    say(copied ? 'Pedido copiado: pégalo en nuestro Instagram' : 'Copia el texto y pégalo en nuestro Instagram');
-    window.open(igUrl(), '_blank', 'noopener');
+    say('Listo: sigue los dos pasos');
   });
 
-  $('#copyOrder').addEventListener('click', () => {
+  /* paso 1: copiar (cada paso es su propio toque, así el navegador lo permite) */
+  copyBtn.addEventListener('click', () => {
     const area = $('#orderText');
-    const ok = copyText(area.value);
-    if (!ok) { area.focus(); area.select(); }
-    say(ok ? 'Pedido copiado' : 'Mantén presionado el texto y elige Copiar');
+    const text = area.value;
+    let settled = false;
+    const finish = ok => {
+      if (settled) return;
+      settled = true;
+      if (ok) {
+        step1.classList.add('is-done');
+        copyBtn.querySelector('span').textContent = '✓ Pedido copiado';
+        igBtn.classList.add('btn--solid');
+        step2.classList.add('is-next');
+        say('Copiado. Ahora el paso 2');
+      } else {
+        area.focus();
+        area.setSelectionRange(0, text.length);
+        say('No se pudo copiar solo: mantén presionado el texto de abajo y elige Copiar');
+      }
+    };
+    const viaSelection = execCopy(area);             // dentro del mismo toque
+    if (viaSelection) finish(true);
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => finish(true), () => finish(viaSelection));
+    } else {
+      finish(viaSelection);
+    }
+  });
+
+  /* paso 2: si aún no copió, se lo recordamos pero lo dejamos pasar */
+  igBtn.addEventListener('click', () => {
+    if (!step1.classList.contains('is-done')) say('Recuerda copiar tu pedido (paso 1) para pegarlo en el chat');
   });
 
   /* ---------- newsletter ---------- */
