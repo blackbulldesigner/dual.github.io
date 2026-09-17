@@ -334,6 +334,31 @@
 
   const step1 = $('#step1'), step2 = $('#step2'), copyBtn = $('#copyStep'), igBtn = $('#igLink');
 
+  /* paso 2: en celular abre la app (perfil de la tienda); en computadora, el chat web.
+     ig.me redirige a instagram.com y iOS no pasa las redirecciones a la app. */
+  function setupInstagramStep() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+    const igWeb = $('#igWeb'), hint = $('#igHint'), label = igBtn.querySelector('span');
+    if (isIOS || isAndroid) {
+      igBtn.href = isAndroid
+        ? `intent://user?username=${INSTAGRAM}#Intent;package=com.instagram.android;scheme=instagram;S.browser_fallback_url=${encodeURIComponent(igUrl())};end`
+        : `instagram://user?username=${INSTAGRAM}`;
+      igBtn.removeAttribute('target');
+      label.textContent = 'Abrir la app de Instagram';
+      hint.innerHTML = 'Se abre nuestro perfil: toca <strong>Mensaje</strong>, mantén presionado, elige <strong>Pegar</strong> y envía.';
+      igWeb.href = igUrl();
+      igWeb.hidden = false;
+    } else {
+      igBtn.href = igUrl();
+      igBtn.target = '_blank';
+      label.textContent = 'Abrir Instagram y pegar';
+      hint.innerHTML = 'En el chat, pega tu pedido (<strong>Ctrl + V</strong>) y envía.';
+      igWeb.hidden = true;
+    }
+  }
+
   function resetSteps() {
     step1.classList.remove('is-done');
     step2.classList.remove('is-next');
@@ -356,7 +381,7 @@
       return;
     }
     $('#orderText').value = orderText();
-    igBtn.href = igUrl();
+    setupInstagramStep();
     resetSteps();
     orderForm.hidden = true;
     orderSent.hidden = false;

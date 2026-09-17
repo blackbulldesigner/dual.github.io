@@ -383,6 +383,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opa
 .step__num{color:var(--smoke)}
 .step__btn{justify-content:center;width:100%;padding:17px 20px;color:var(--ink);--btn-ground:var(--paper)}
 .step__hint{margin:0;color:var(--smoke);font-size:14px}
+.step__alt{justify-self:start;padding:4px 0;color:var(--smoke);font-size:11px;text-decoration:underline;text-underline-offset:3px}
+.step__alt:hover{color:var(--ink)}
 .step.is-done{border-color:var(--ink)}
 .step.is-done .step__btn{background:transparent}
 .step.is-done .step__btn span{color:var(--ink)}
